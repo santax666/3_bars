@@ -14,7 +14,7 @@ def get_distance(my_longitude, my_latitude, bar_longitude, bar_latitude):
     return ((my_longitude - bar_longitude)**2 + (my_latitude - bar_latitude)**2)**0.5
 
 
-def get_bar(data, bar_type):
+def get_bar(data, bar_type, my_longitude, my_latitude):
     if bar_type == 'big':
         sorted_bars = sorted(data, key=lambda bar: bar['Cells']['SeatsCount'], reverse=True)
         mark_of_bar = sorted_bars[0]['Cells']['SeatsCount']
@@ -72,8 +72,8 @@ if __name__ == '__main__':
                     my_longitude = input("Долгота введена неверно, повторите ввод: ")
                 my_longitude = float(my_longitude.replace(',', '.'))
 
-                print('Самый(ые) большой(ые) бар(ы):', get_bar(bars_json, 'big')[0], ', число посадочных мест:', get_bar(bars_json, 'big')[1])
-                print('Самый(ые) маленький(ие) бар(ы):', get_bar(bars_json, 'small')[0], ', число посадочных мест:', get_bar(bars_json, 'small')[1])
-                print('Самый(ые) ближайший(ие) бар(ы):', get_bar(bars_json, 'near')[0], ', расстояние до бара(ов):', get_bar(bars_json, 'near')[1])
+                print('Самый(ые) большой(ые) бар(ы):', get_bar(bars_json, 'big',my_longitude, my_latitude)[0], ', число посадочных мест:', get_bar(bars_json, 'big',my_longitude, my_latitude)[1])
+                print('Самый(ые) маленький(ие) бар(ы):', get_bar(bars_json, 'small',my_longitude, my_latitude)[0], ', число посадочных мест:', get_bar(bars_json, 'small',my_longitude, my_latitude)[1])
+                print('Самый(ые) ближайший(ие) бар(ы):', get_bar(bars_json, 'near',my_longitude, my_latitude)[0], ', расстояние до бара(ов):', get_bar(bars_json, 'near',my_longitude, my_latitude)[1])
     else:
         print("Не задан JSON-файл для обработки!")
