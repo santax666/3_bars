@@ -11,35 +11,35 @@ def load_data(filepath):
         return json.load(file_handler)
 
 
-def get_distance(longitude, latitude, bar_coordinates):
-    return hypot((longitude-bar_coordinates[0]), (latitude-bar_coordinates[1]))
+def get_distance(start_point, end_point):
+    return hypot((start_point[0]-end_point[0]), (start_point[1]-end_point[1]))
 
 
-def get_parse_data(data, longitude, latitude):
-    parse_data = []
-    for bar in data:
-        name = bar["Cells"]["Name"]
-        seats = bar["Cells"]['SeatsCount']
-        distance = get_distance(longitude, latitude,
-                                bar["Cells"]["geoData"]["coordinates"])
-        bar_info = (name, seats, distance,)
-        parse_data.append(bar_info)
-    return parse_data
+def get_data_for_analysis(json_data, coordinates):
+    data_for_analysis = []
+    for bar in json_data:
+        bar_name = bar["Cells"]["Name"]
+        bar_seats_count = bar["Cells"]['SeatsCount']
+        distance_to_bar = get_distance(coordinates,
+                                       bar["Cells"]["geoData"]["coordinates"])
+        bar_info = (bar_name, bar_seats_count, distance_to_bar,)
+        data_for_analysis.append(bar_info)
+    return data_for_analysis
 
 
-def get_bar(data):
-    big = max(data, key=lambda x: x[1])
-    small = min(data, key=lambda x: x[1])
-    near = min(data, key=lambda x: x[2])
-    return big, small, near
+def find_extreme_values(data):
+    biggest = max(data, key=lambda x: x[1])
+    smallest = min(data, key=lambda x: x[1])
+    nearest = min(data, key=lambda x: x[2])
+    return biggest, smallest, nearest
 
 
-def is_digit(string):
-    if string.isdigit():
+def is_digit(value):
+    if value.isdigit():
         return True
     else:
         try:
-            float(string.replace(',', '.'))
+            float(value.replace(',', '.'))
             return True
         except ValueError:
             return False
@@ -54,27 +54,29 @@ def createParser():
     return parser
 
 
+def get_your_coordinates(type):
+    coordinate = input("Пожалуйста, введите вашу {0}: ".format(type))
+    while not is_digit(coordinate):
+        coordinate = input("Неверный формат, повторите ввод: ")
+    return float(coordinate.replace(',', '.'))
+
+
 if __name__ == '__main__':
     parser = createParser()
     namespace = parser.parse_args()
     json_file = namespace.jsonfile
 
-    jsonfile = load_data(json_file)
-    if jsonfile is None:
+    json_data = load_data(json_file)
+    if json_data is None:
         print("JSON-файл не обнаружен!")
     else:
-        latitude = input("Пожалуйста, введите вашу широту: ")
-        while not is_digit(latitude):
-            latitude = input("Неверная широта, повторите ввод: ")
-        latitude = float(latitude.replace(',', '.'))
+        latitude = get_your_coordinates('широту')
+        longitude = get_your_coordinates('долготу')
+        coordinates = (latitude, longitude,)
 
-        longitude = input("Пожалуйста, введите вашу долготу: ")
-        while not is_digit(longitude):
-            longitude = input("Неверная долгота, повторите ввод: ")
-        longitude = float(longitude.replace(',', '.'))
+        bars_data = get_data_for_analysis(json_data, coordinates)
+        bars_info = find_extreme_values(bars_data)
 
-        bars_data = get_parse_data(jsonfile, longitude, latitude)
-        bars = get_bar(bars_data)
-        print("Самый большой бар:", bars[0][0])
-        print("Самый маленький бар:", bars[1][0])
-        print("Самый близкий бар:", bars[2][0])
+        print("Самый большой бар:", bars_info[0][0])
+        print("Самый маленький бар:", bars_info[1][0])
+        print("Самый близкий бар:", bars_info[2][0])
