@@ -34,44 +34,39 @@ def find_extreme_values(data):
     return biggest, smallest, nearest
 
 
-def is_digit(value):
-    if value.isdigit():
-        return True
-    else:
-        try:
-            float(value.replace(',', '.'))
-            return True
-        except ValueError:
-            return False
-
-
 def createParser():
     parser = argparse.ArgumentParser(usage='%(prog)s [аргументы]',
                                      description="Определение самого большого,"
                                                  " маленького, близкого бара"
                                                  " с помощью %(prog)s")
     parser.add_argument("jsonfile", help="JSON-файл для обработки")
+    parser.add_argument('--latitude', type=int, help="Ваша широта")
+    parser.add_argument('--longitude', type=int, help="Ваша долгота")
     return parser
 
 
 def get_your_coordinates(type):
     coordinate = input("Пожалуйста, введите вашу {0}: ".format(type))
-    while not is_digit(coordinate):
+    while not coordinate.isdecimal():
         coordinate = input("Неверный формат, повторите ввод: ")
-    return float(coordinate.replace(',', '.'))
+    return int(coordinate)
 
 
 if __name__ == '__main__':
     parser = createParser()
     namespace = parser.parse_args()
     json_file = namespace.jsonfile
+    latitude = namespace.latitude
+    longitude = namespace.longitude
 
     json_data = load_data(json_file)
     if json_data is None:
         print("JSON-файл не обнаружен!")
     else:
-        latitude = get_your_coordinates('широту')
-        longitude = get_your_coordinates('долготу')
+        if latitude is None:
+            latitude = get_your_coordinates('широту')
+        if longitude is None:
+            longitude = get_your_coordinates('долготу')
         coordinates = (latitude, longitude,)
 
         bars_data = get_data_for_analysis(json_data, coordinates)
