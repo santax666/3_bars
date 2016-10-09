@@ -34,7 +34,7 @@ def find_extreme_values(data):
     return biggest, smallest, nearest
 
 
-def createParser():
+def create_parser():
     parser = argparse.ArgumentParser(usage='%(prog)s [аргументы]',
                                      description="Определение самого большого,"
                                                  " маленького, близкого бара"
@@ -53,7 +53,7 @@ def get_your_coordinates(type):
 
 
 if __name__ == '__main__':
-    parser = createParser()
+    parser = create_parser()
     namespace = parser.parse_args()
     json_file = namespace.jsonfile
     latitude = namespace.latitude
