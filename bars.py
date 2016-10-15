@@ -45,8 +45,8 @@ def create_parser():
     return parser
 
 
-def get_your_coordinates(type):
-    coordinate = input("Пожалуйста, введите вашу {0}: ".format(type))
+def get_your_coordinates(kind_param):
+    coordinate = input("Пожалуйста, введите вашу {0}: ".format(kind_param))
     while not coordinate.isdecimal():
         coordinate = input("Неверный формат, повторите ввод: ")
     return int(coordinate)
